@@ -1,5 +1,5 @@
 local require      = require
-local lib          = require "resty.unistring"
+local lib          = require "resty.unistring.lib"
 local ffi          = require "ffi"
 local ffi_new      = ffi.new
 local ffi_cdef     = ffi.cdef
