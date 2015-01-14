@@ -1,10 +1,12 @@
 local require      = require
 local lib          = require "resty.unistring.lib"
 local ffi          = require "ffi"
+local ffi_gc       = ffi.gc
 local ffi_new      = ffi.new
 local ffi_cdef     = ffi.cdef
 local ffi_str      = ffi.string
 local ffi_errno    = ffi.errno
+local C            = ffi.C
 local tonumber     = tonumber
 ffi_cdef[[
 const char * uc_locale_language(void);
@@ -20,15 +22,15 @@ int          u8_is_titlecase (const uint8_t *s, size_t n, const char *iso639_lan
 int          u8_is_casefolded(const uint8_t *s, size_t n, const char *iso639_language, bool *resultp);
 int          u8_is_cased     (const uint8_t *s, size_t n, const char *iso639_language, bool *resultp);
 ]]
-local int  = ffi_new("int[1]")
-local size = ffi_new("size_t[1]")
-local bool = ffi_new("bool[1]")
+local int  = ffi_new "int[1]"
+local size = ffi_new "size_t[1]"
+local bool = ffi_new "bool[1]"
 local case = {}
 function case.uc_locale_language() return ffi_str(lib.uc_locale_language()) end
-function case.u8_toupper (s, n, iso639_language, nf) return ffi_str(lib.u8_toupper (s, n or #s, iso639_language, nf, nil, size), size[0]), tonumber(size[0]) end
-function case.u8_tolower (s, n, iso639_language, nf) return ffi_str(lib.u8_tolower (s, n or #s, iso639_language, nf, nil, size), size[0]), tonumber(size[0]) end
-function case.u8_totitle (s, n, iso639_language, nf) return ffi_str(lib.u8_totitle (s, n or #s, iso639_language, nf, nil, size), size[0]), tonumber(size[0]) end
-function case.u8_casefold(s, n, iso639_language, nf) return ffi_str(lib.u8_casefold(s, n or #s, iso639_language, nf, nil, size), size[0]), tonumber(size[0]) end
+function case.u8_toupper (s, n, iso639_language, nf) return ffi_str(ffi_gc(lib.u8_toupper (s, n or #s, iso639_language, nf, nil, size), C.free), size[0]), tonumber(size[0]) end
+function case.u8_tolower (s, n, iso639_language, nf) return ffi_str(ffi_gc(lib.u8_tolower (s, n or #s, iso639_language, nf, nil, size), C.free), size[0]), tonumber(size[0]) end
+function case.u8_totitle (s, n, iso639_language, nf) return ffi_str(ffi_gc(lib.u8_totitle (s, n or #s, iso639_language, nf, nil, size), C.free), size[0]), tonumber(size[0]) end
+function case.u8_casefold(s, n, iso639_language, nf) return ffi_str(ffi_gc(lib.u8_casefold(s, n or #s, iso639_language, nf, nil, size), C.free), size[0]), tonumber(size[0]) end
 function case.u8_casecmp(s1, n1, s2, n2, iso639_language, nf)
     if lib.u8_casecmp(s1, n1 or #s1, s2, n2 or #s2, iso639_language, nf, int) == 0 then return int[0] end
     return nil, ffi_errno()

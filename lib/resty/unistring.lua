@@ -8,4 +8,6 @@ us.version = rshift(lib._libunistring_version, 16) .. "." .. rshift(lib._libunis
 us.str     = require "resty.unistring.str"
 us.case    = require "resty.unistring.case"
 us.width   = require "resty.unistring.width"
+us.stdio   = require "resty.unistring.stdio"
+us.buf     = require "resty.unistring.buf"
 return us
