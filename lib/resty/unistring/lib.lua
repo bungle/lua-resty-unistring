@@ -6,6 +6,7 @@ ffi_cdef[[
 void free (void* ptr);
 const int _libunistring_version;
 struct unicode_normalization_form;
+typedef uint32_t ucs4_t;
 typedef const struct unicode_normalization_form *uninorm_t;
 const struct unicode_normalization_form uninorm_nfd;
 const struct unicode_normalization_form uninorm_nfc;

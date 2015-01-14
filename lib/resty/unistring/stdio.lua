@@ -3,6 +3,7 @@ local lib          = require "resty.unistring.lib"
 local ffi          = require "ffi"
 local ffi_cdef     = ffi.cdef
 local ffi_str      = ffi.string
+local ffi_new      = ffi.new
 ffi_cdef[[
 int u8_sprintf (uint8_t *buf, const char *format, ...);
 int u8_snprintf(uint8_t *buf, size_t size, const char *format, ...);
@@ -11,7 +12,7 @@ int u8_u8_sprintf (uint8_t *buf, const uint8_t *format, ...);
 int u8_u8_snprintf (uint8_t *buf, size_t size, const uint8_t *format, ...);
 int u8_u8_asprintf (uint8_t **resultp, const uint8_t *format, ...);
 ]]
-local result = ffi.new "uint8_t *[1]"
+local result = ffi_new "uint8_t *[1]"
 local stdio = {}
 function stdio.u8_sprintf(buf, format, ...)
     local i = lib.u8_sprintf(buf, format, ...)
