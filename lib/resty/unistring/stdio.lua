@@ -1,9 +1,9 @@
-local require      = require
-local lib          = require "resty.unistring.lib"
-local ffi          = require "ffi"
-local ffi_cdef     = ffi.cdef
-local ffi_str      = ffi.string
-local ffi_new      = ffi.new
+local require  = require
+local lib      = require "resty.unistring.lib"
+local ffi      = require "ffi"
+local ffi_cdef = ffi.cdef
+local ffi_str  = ffi.string
+local ffi_new  = ffi.new
 ffi_cdef[[
 int u8_sprintf (uint8_t *buf, const char *format, ...);
 int u8_snprintf(uint8_t *buf, size_t size, const char *format, ...);

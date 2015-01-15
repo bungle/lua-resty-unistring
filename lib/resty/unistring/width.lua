@@ -1,7 +1,7 @@
-local require      = require
-local lib          = require "resty.unistring.lib"
-local ffi          = require "ffi"
-local ffi_cdef     = ffi.cdef
+local require  = require
+local lib      = require "resty.unistring.lib"
+local ffi      = require "ffi"
+local ffi_cdef = ffi.cdef
 ffi_cdef[[
 int u8_width   (const uint8_t *s, size_t n, const char *encoding);
 int u8_strwidth(const uint8_t *s, const char *encoding);

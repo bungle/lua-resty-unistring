@@ -1,7 +1,7 @@
-local require      = require
-local ffi          = require "ffi"
-local ffi_cdef     = ffi.cdef
-local ffi_load     = ffi.load
+local require  = require
+local ffi      = require "ffi"
+local ffi_cdef = ffi.cdef
+local ffi_load = ffi.load
 ffi_cdef[[
 void free (void* ptr);
 const int _libunistring_version;

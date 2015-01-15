@@ -1,13 +1,13 @@
-local require      = require
-local lib          = require "resty.unistring.lib"
-local ffi          = require "ffi"
-local ffi_gc       = ffi.gc
-local ffi_new      = ffi.new
-local ffi_cdef     = ffi.cdef
-local ffi_str      = ffi.string
-local ffi_errno    = ffi.errno
-local C            = ffi.C
-local tonumber     = tonumber
+local require   = require
+local lib       = require "resty.unistring.lib"
+local ffi       = require "ffi"
+local ffi_gc    = ffi.gc
+local ffi_new   = ffi.new
+local ffi_cdef  = ffi.cdef
+local ffi_str   = ffi.string
+local ffi_errno = ffi.errno
+local C         = ffi.C
+local tonumber  = tonumber
 ffi_cdef[[
 const char * uc_locale_language(void);
 uint8_t    * u8_toupper (const uint8_t *s, size_t n, const char *iso639_language, uninorm_t nf, uint8_t *resultbuf, size_t *lengthp);

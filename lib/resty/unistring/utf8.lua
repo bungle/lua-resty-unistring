@@ -1,9 +1,9 @@
 -- This is a drop-in replacement to LuaJIT to support Lua 5.3 utf8 library
 -- with some additional functionality for UTF-8 enabled string.xxx functions.
-local sub      = string.sub
-local str      = require "resty.unistring.str"
-local case     = require "resty.unistring.case"
-local find     = string.find
+local sub  = string.sub
+local str  = require "resty.unistring.str"
+local case = require "resty.unistring.case"
+local find = string.find
 if not utf8 then
     utf8 = {}
     utf8.charpattern = "[\0-\x7F\xC2-\xF4][\x80-\xBF]*"
