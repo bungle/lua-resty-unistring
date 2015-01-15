@@ -25,18 +25,24 @@ int          u8_is_cased     (const uint8_t *s, size_t n, const char *iso639_lan
 local int  = ffi_new "int[1]"
 local size = ffi_new "size_t[1]"
 local bool = ffi_new "bool[1]"
+local form = {
+    nfc  = lib.uninorm_nfc,
+    nfd  = lib.uninorm_nfd,
+    nfkc = lib.uninorm_nfkc,
+    nfkd = lib.uninorm_nfkd
+}
 local case = {}
 function case.uc_locale_language() return ffi_str(lib.uc_locale_language()) end
-function case.u8_toupper (s, n, iso639_language, nf) return ffi_str(ffi_gc(lib.u8_toupper (s, n or #s, iso639_language, nf, nil, size), C.free), size[0]), tonumber(size[0]) end
-function case.u8_tolower (s, n, iso639_language, nf) return ffi_str(ffi_gc(lib.u8_tolower (s, n or #s, iso639_language, nf, nil, size), C.free), size[0]), tonumber(size[0]) end
-function case.u8_totitle (s, n, iso639_language, nf) return ffi_str(ffi_gc(lib.u8_totitle (s, n or #s, iso639_language, nf, nil, size), C.free), size[0]), tonumber(size[0]) end
-function case.u8_casefold(s, n, iso639_language, nf) return ffi_str(ffi_gc(lib.u8_casefold(s, n or #s, iso639_language, nf, nil, size), C.free), size[0]), tonumber(size[0]) end
+function case.u8_toupper (s, n, iso639_language, nf) return ffi_str(ffi_gc(lib.u8_toupper (s, n or #s, iso639_language, form[nf], nil, size), C.free), size[0]), tonumber(size[0]) end
+function case.u8_tolower (s, n, iso639_language, nf) return ffi_str(ffi_gc(lib.u8_tolower (s, n or #s, iso639_language, form[nf], nil, size), C.free), size[0]), tonumber(size[0]) end
+function case.u8_totitle (s, n, iso639_language, nf) return ffi_str(ffi_gc(lib.u8_totitle (s, n or #s, iso639_language, form[nf], nil, size), C.free), size[0]), tonumber(size[0]) end
+function case.u8_casefold(s, n, iso639_language, nf) return ffi_str(ffi_gc(lib.u8_casefold(s, n or #s, iso639_language, form[nf], nil, size), C.free), size[0]), tonumber(size[0]) end
 function case.u8_casecmp(s1, n1, s2, n2, iso639_language, nf)
-    if lib.u8_casecmp(s1, n1 or #s1, s2, n2 or #s2, iso639_language, nf, int) == 0 then return int[0] end
+    if lib.u8_casecmp(s1, n1 or #s1, s2, n2 or #s2, iso639_language, form[nf], int) == 0 then return int[0] end
     return nil, ffi_errno()
 end
 function case.u8_casecoll(s1, n1, s2, n2, iso639_language, nf)
-    if lib.u8_casecoll(s1, n1 or #s1, s2, n2 or #s2, iso639_language, nf, int) == 0 then return int[0] end
+    if lib.u8_casecoll(s1, n1 or #s1, s2, n2 or #s2, iso639_language, form[nf], int) == 0 then return int[0] end
     return nil, ffi_errno()
 end
 function case.u8_is_uppercase(s, n, iso639_language)
