@@ -16,12 +16,12 @@ if not utf8 then
         return nil, (find(s, e, 1, true))
     end
 end
-if not ut8.lower then
+if not utf8.lower then
     function utf8.lower(s)
         return case.u8_tolower(s)
     end
 end
-if not ut8.upper then
+if not utf8.upper then
     function utf8.upper(s)
         return case.u8_toupper(s)
     end
