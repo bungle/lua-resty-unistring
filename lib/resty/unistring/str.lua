@@ -1,18 +1,25 @@
-local require  = require
-local lib      = require "resty.unistring.lib"
-local ffi      = require "ffi"
-local ffi_cdef = ffi.cdef
-local ffi_str  = ffi.string
-local ffi_new  = ffi.new
-local ffi_gc   = ffi.gc
-local C        = ffi.C
+local require    = require
+local lib        = require "resty.unistring.lib"
+local ffi        = require "ffi"
+local ffi_cdef   = ffi.cdef
+local ffi_str    = ffi.string
+local ffi_new    = ffi.new
+local ffi_gc     = ffi.gc
+local ffi_sizeof = ffi.sizeof
+local C          = ffi.C
 ffi_cdef[[
-const uint8_t * u8_check     (const uint8_t *s, size_t n);
-uint16_t *      u8_to_u16    (const uint8_t *s, size_t n, uint16_t *resultbuf, size_t *lengthp);
-uint32_t *      u8_to_u32    (const uint8_t *s, size_t n, uint32_t *resultbuf, size_t *lengthp);
+const uint8_t * u8_check     (const uint8_t  *s, size_t n);
+uint16_t *      u8_to_u16    (const uint8_t  *s, size_t n, uint16_t *resultbuf, size_t *lengthp);
+uint32_t *      u8_to_u32    (const uint8_t  *s, size_t n, uint32_t *resultbuf, size_t *lengthp);
+uint8_t *       u16_to_u8    (const uint16_t *s, size_t n, uint8_t  *resultbuf, size_t *lengthp);
+uint8_t *       u32_to_u8    (const uint32_t *s, size_t n, uint8_t  *resultbuf, size_t *lengthp);
 int             u8_strmbtouc (ucs4_t *puc, const uint8_t *s);
 int             u8_mblen     (const uint8_t *s, size_t n);
+int             u16_mblen    (const uint16_t *s, size_t n);
+int             u32_mblen    (const uint32_t *s, size_t n);
 size_t          u8_mbsnlen   (const uint8_t *s, size_t n);
+size_t          u16_mbsnlen  (const uint16_t *s, size_t n);
+size_t          u32_mbsnlen  (const uint32_t *s, size_t n);
 size_t          u8_strlen    (const uint8_t *s);
 size_t          u8_strnlen   (const uint8_t *s, size_t maxlen);
 size_t          u8_strcspn   (const uint8_t *str, const uint8_t *reject);
@@ -36,6 +43,12 @@ end
 function str.u8_to_u32(s, n)
     return ffi_gc(lib.u8_to_u32(s, n or #s, nil, size), C.free), tonumber(size[0])
 end
+function str.u16_to_u8(s, n)
+    return ffi_str(ffi_gc(lib.u16_to_u8(s, n or ffi_sizeof(s), nil, size), C.free), tonumber(size[0])), tonumber(size[0])
+end
+function str.u32_to_u8(s, n)
+    return ffi_str(ffi_gc(lib.u32_to_u8(s, n or ffi_sizeof(s), nil, size), C.free), tonumber(size[0])), tonumber(size[0])
+end
 function str.u8_strmbtouc(s)
     local i = lib.u8_strmbtouc(ucs4, s)
     if i < 0 then return nil, i end
@@ -44,8 +57,20 @@ end
 function str.u8_mblen(s, n)
     return lib.u8_mblen(s, n or #s)
 end
+function str.u16_mblen(s, n)
+    return lib.u16_mblen(s, n or ffi_sizeof(s))
+end
+function str.u32_mblen(s, n)
+    return lib.u32_mblen(s, n or ffi_sizeof(s))
+end
 function str.u8_mbsnlen(s, n)
     return tonumber(lib.u8_mbsnlen(s, n or #s))
+end
+function str.u16_mbsnlen(s, n)
+    return tonumber(lib.u16_mbsnlen(s, n or ffi_sizeof(s)))
+end
+function str.u32_mbsnlen(s, n)
+    return tonumber(lib.u32_mbsnlen(s, n or ffi_sizeof(s)))
 end
 function str.u8_strlen(s)
     return tonumber(lib.u8_strlen(s))
