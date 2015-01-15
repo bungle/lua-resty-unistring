@@ -23,9 +23,9 @@ function norm.u8_normalize(nf, s)
     if type(nf) == "string" then nf = form[nf] end
     if not nf then return nil, -1 end
     local l = #s
-    local r = lib.u8_normalize(nf, s, l, nil, size)
+    lib.u8_normalize(nf, s, l, nil, size)
     local b = ffi_new(uint8t, size[0])
-    r = lib.u8_normalize(nf, s, l, b, size)
+    lib.u8_normalize(nf, s, l, b, size)
     return ffi_str(b, size[0])
 end
 return norm
