@@ -37,6 +37,14 @@ if not utf8.len then
 end
 --if not utf8.offset then
 --    function utf8.offset(s, n, i)
+--        local st = type(s)
+--        local nt = type(n)
+--        assert(st == "string" or st == "number", string.format("bad argument #1 to 'offset' (string expected, got %s)", st))
+--        assert(nt == "number",                   string.format("bad argument #2 to 'offset' (string expected, got %s)", nt))
+--        local p = i or (n < 0 and #s + 1 or 1)
+--        local pt = type(p)
+--        assert(it == "number",                   string.format("bad argument #2 to 'offset' (string expected, got %s)", it))
+--        local l = #s;
 --    end
 --end
 if not utf8.lower then
