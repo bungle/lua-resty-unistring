@@ -7,14 +7,22 @@ local norm = require "resty.unistring.norm"
 local nrmz = norm.u8_normalize
 local find = string.find
 local utf8 = utf8 or {}
-if not utf8.charpattern then
-    utf8.charpattern = "[\0-\x7F\xC2-\xF4][\x80-\xBF]*"
-end
 --if not utf8.char then
 --    function utf8.char(...)
 --        for i = 1, select("#", ...) do
 --            select(i, ...)
 --        end
+--    end
+--end
+if not utf8.charpattern then
+    utf8.charpattern = "[\0-\x7F\xC2-\xF4][\x80-\xBF]*"
+end
+--if not utf8.codes then
+--    function utf8.codes(s)
+--    end
+--end
+--if not utf8.codepoint then
+--    function utf8.codepoint(s, i, j)
 --    end
 --end
 if not utf8.len then
@@ -27,6 +35,10 @@ if not utf8.len then
         return nil, (find(s, e, 1, true))
     end
 end
+--if not utf8.offset then
+--    function utf8.offset(s, n, i)
+--    end
+--end
 if not utf8.lower then
     function utf8.lower(s)
         return case.u8_tolower(s)
@@ -55,4 +67,5 @@ if not utf8.slug then
         return sub(s, i, j)
     end
 end
-if not _G.utf8 then _G.utf8 = utf8 end
+--if not _G.utf8 then _G.utf8 = utf8 end
+return utf8
