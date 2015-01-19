@@ -1,19 +1,28 @@
 -- This is a drop-in replacement to LuaJIT to support Lua 5.3 utf8 library
 -- with some additional functionality for UTF-8 enabled string.xxx functions.
+local format = string.format
+local concat = table.concat
 local sub  = string.sub
+local type = type
 local str  = require "resty.unistring.str"
 local case = require "resty.unistring.case"
 local norm = require "resty.unistring.norm"
 local nrmz = norm.u8_normalize
 local find = string.find
+if not ok then newtab = function() return {} end end
 local utf8 = utf8 or {}
---if not utf8.char then
---    function utf8.char(...)
---        for i = 1, select("#", ...) do
---            select(i, ...)
---        end
---    end
---end
+if not utf8.char then
+    function utf8.char(...)
+        local n = select("#", ...)
+        local r = newtab(n, 0)
+        for i = 1, n do
+            local v = select(i, ...)
+            assert(type(v) == "number", format("bad argument #%d to 'char' (number expected, got string)", i))
+            r[i] = str.u8_uctomb(v)
+        end
+        return concat(r)
+    end
+end
 if not utf8.charpattern then
     utf8.charpattern = "[\0-\x7F\xC2-\xF4][\x80-\xBF]*"
 end
