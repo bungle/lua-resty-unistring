@@ -13,15 +13,16 @@ uint16_t *      u8_to_u16    (const uint8_t  *s, size_t n, uint16_t *resultbuf, 
 uint32_t *      u8_to_u32    (const uint8_t  *s, size_t n, uint32_t *resultbuf, size_t *lengthp);
 uint8_t *       u16_to_u8    (const uint16_t *s, size_t n, uint8_t  *resultbuf, size_t *lengthp);
 uint8_t *       u32_to_u8    (const uint32_t *s, size_t n, uint8_t  *resultbuf, size_t *lengthp);
-int             u8_strmbtouc (ucs4_t *puc, const uint8_t *s);
 int             u8_mblen     (const uint8_t *s, size_t n);
 int             u16_mblen    (const uint16_t *s, size_t n);
 int             u32_mblen    (const uint32_t *s, size_t n);
+int             u8_mbtouc    (ucs4_t *puc, const uint8_t *s, size_t n);
+int             u8_mbtoucr   (ucs4_t *puc, const uint8_t *s, size_t n);
+int             u8_uctomb    (uint8_t *s, ucs4_t uc, int n);
 size_t          u8_mbsnlen   (const uint8_t *s, size_t n);
 size_t          u16_mbsnlen  (const uint16_t *s, size_t n);
 size_t          u32_mbsnlen  (const uint32_t *s, size_t n);
-int             u8_uctomb    (uint8_t *s, ucs4_t uc, int n);
-int             u8_mbtouc    (ucs4_t *puc, const uint8_t *s, size_t n);
+int             u8_strmbtouc (ucs4_t *puc, const uint8_t *s);
 size_t          u8_strlen    (const uint8_t *s);
 size_t          u8_strnlen   (const uint8_t *s, size_t maxlen);
 size_t          u8_strcspn   (const uint8_t *str, const uint8_t *reject);
@@ -66,6 +67,19 @@ end
 function str.u32_mblen(s, n)
     return lib.u32_mblen(s, n or ffi_sizeof(s))
 end
+function str.u8_mbtouc(s, n)
+    local l = lib.u8_mbtouc(ucs4, s, n or #s)
+    return ucs4[0], l
+end
+function str.u8_mbtoucr(s, n)
+    local l = lib.u8_mbtouc(ucs4, s, n or #s)
+    return ucs4[0], l
+end
+function str.u8_uctomb(uc, n)
+    ucs4[0] = uc
+    local l = lib.u8_uctomb(ui86, uc, n or 6)
+    return ffi_str(ui86, l), l
+end
 function str.u8_mbsnlen(s, n)
     return tonumber(lib.u8_mbsnlen(s, n or #s))
 end
@@ -74,15 +88,6 @@ function str.u16_mbsnlen(s, n)
 end
 function str.u32_mbsnlen(s, n)
     return tonumber(lib.u32_mbsnlen(s, n or ffi_sizeof(s)))
-end
-function str.u8_uctomb(uc, n)
-    ucs4[0] = uc
-    local l = lib.u8_uctomb(ui86, uc, n or 6)
-    return ffi_str(ui86, l), l
-end
-function str.u8_mbtouc(s, n)
-    local l = lib.u8_mbtouc(ucs4, s, n or #s)
-    return ucs4[0], l
 end
 function str.u8_strlen(s)
     return tonumber(lib.u8_strlen(s))
