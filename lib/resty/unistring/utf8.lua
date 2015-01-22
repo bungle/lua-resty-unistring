@@ -5,6 +5,7 @@ local format  = string.format
 local concat  = table.concat
 local type    = type
 local sub     = string.sub
+local rep     = string.rep
 local ffi     = require "ffi"
 local ffi_new = ffi.new
 local ffi_str = ffi.string
@@ -124,6 +125,10 @@ if not utf8.sub then
         end
         return ""
     end
+end
+
+if not utf8.rep then
+    utf8.rep = rep
 end
 if not utf8.reverse then
     function utf8.reverse(s)
