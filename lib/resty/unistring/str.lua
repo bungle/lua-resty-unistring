@@ -1,11 +1,15 @@
 local require    = require
+local format     = string.format
+local type       = type
 local lib        = require "resty.unistring.lib"
 local ffi        = require "ffi"
 local ffi_cdef   = ffi.cdef
 local ffi_str    = ffi.string
 local ffi_new    = ffi.new
 local ffi_gc     = ffi.gc
+local ffi_typeof = ffi.typeof
 local ffi_sizeof = ffi.sizeof
+local ffi_cast   = ffi.cast
 local C          = ffi.C
 ffi_cdef[[
 const uint8_t * u8_check     (const uint8_t  *s, size_t n);
@@ -34,10 +38,12 @@ uint8_t *       u8_strpbrk   (const uint8_t *str, const uint8_t *accept);
 uint8_t *       u8_strstr    (const uint8_t *haystack, const uint8_t *needle);
 bool            u8_startswith(const uint8_t *str, const uint8_t *prefix);
 bool            u8_endswith  (const uint8_t *str, const uint8_t *suffix);
+uint8_t *       u8_strtok    (uint8_t *str, const uint8_t *delim, uint8_t **ptr);
 ]]
+local uint = ffi_typeof "uint8_t[?]"
 local ucs4 = ffi_new "ucs4_t[1]"
 local size = ffi_new "size_t[1]"
-local ui86 = ffi_new "uint8_t[6]"
+local ui86 = ffi_new(uint, 6)
 local str = {}
 function str.u8_check(s, n)
     local ok = lib.u8_check(s, n or #s)
@@ -128,5 +134,16 @@ function str.u8_startswith(s, prefix)
 end
 function str.u8_endswith(s, suffix)
     return lib.u8_endswith(s, suffix)
+end
+function str.u8_strtok(str, delim)
+    local t = type(str)
+    if t == "string" then
+        local s = ffi_cast('uint8_t *', str)
+        local p = ffi_new "uint8_t *[1]"
+        return ffi_str(lib.u8_strtok(s, delim, p)), p
+    end
+    assert(t      == "cdata", format("bad argument #1 to 'u8_strtok' (string or cdata expected, got %s)", t))
+    assert(str[0] ~= nil,            "bad argument #1 to 'u8_strtok' (string or cdata expected, got nil")
+    return ffi_str(lib.u8_strtok(str[0], delim, str)), str
 end
 return str
