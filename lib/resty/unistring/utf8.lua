@@ -107,7 +107,7 @@ if not utf8.sub then
     function utf8.sub(s, i, j)
         local t = type(i)
         assert(t == "number", format("bad argument #2 to 'sub' (number expected, got %s)", t))
-        local l = lib.u8_mbsnlen(s, n or #s)
+        local l = lib.u8_mbsnlen(s, #s)
         i = posrelat(i, l)
         j = posrelat(j or -1, l)
         if i < 1 then i = 1 end
@@ -123,6 +123,18 @@ if not utf8.sub then
             return ffi_str(lib.u8_move(buf(l), s, l), l)
         end
         return ""
+    end
+end
+if not utf8.reverse then
+    function utf8.reverse(s)
+        local u = ffi_new "ucs4_t[1]"
+        local l = tonumber(lib.u8_mbsnlen(s, #s))
+        local r = newtab(l, 0)
+        for i = l, 1, -1 do
+            s = lib.u8_next(u, s)
+            r[i] = str.u8_uctomb(u[0])
+        end
+        return table.concat(r)
     end
 end
 if not utf8.slug then

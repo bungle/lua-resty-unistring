@@ -94,7 +94,6 @@ function str.u8_mbtoucr(s, n)
     return ucs4[0], l
 end
 function str.u8_uctomb(uc, n)
-    ucs4[0] = uc
     local l = lib.u8_uctomb(ui86, uc, n or 6)
     return ffi_str(ui86, l), l
 end
