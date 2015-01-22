@@ -66,6 +66,11 @@ if not utf8.upper then
         return case.u8_toupper(s)
     end
 end
+if not utf8.title then
+    function utf8.title(s)
+        return case.u8_totitle(s)
+    end
+end
 if not utf8.starts then
     function utf8.starts(s, prefix)
         return case.u8_startswith(s, prefix)
