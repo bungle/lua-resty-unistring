@@ -2,13 +2,13 @@
 -- with some additional functionality for UTF-8 enabled string.xxx functions.
 local format = string.format
 local concat = table.concat
-local sub  = string.sub
-local type = type
-local str  = require "resty.unistring.str"
-local case = require "resty.unistring.case"
-local norm = require "resty.unistring.norm"
-local nrmz = norm.u8_normalize
-local find = string.find
+local type   = type
+local sub    = string.sub
+local str    = require "resty.unistring.str"
+local case   = require "resty.unistring.case"
+local norm   = require "resty.unistring.norm"
+local nrmz   = norm.u8_normalize
+local find   = string.find
 if not ok then newtab = function() return {} end end
 local utf8 = utf8 or {}
 if not utf8.char then
@@ -64,6 +64,27 @@ end
 if not utf8.upper then
     function utf8.upper(s)
         return case.u8_toupper(s)
+    end
+end
+if not utf8.starts then
+    function utf8.starts(s, prefix)
+        return case.u8_startswith(s, prefix)
+    end
+end
+if not utf8.ends then
+    function utf8.ends(s, suffix)
+        return case.u8_endswith(s, suffix)
+    end
+end
+if not utf8.split then
+    function utf8.split(s, delim)
+        local t = {}
+        local s = str.u8_strtok(s, delim)
+        while s ~= nil do
+            t[#t+1] = s
+            s = str.u8_strtok(delim)
+        end
+        return t
     end
 end
 if not utf8.slug then
