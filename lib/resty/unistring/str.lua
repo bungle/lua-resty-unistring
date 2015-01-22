@@ -135,16 +135,27 @@ function str.u8_endswith(s, suffix)
     return lib.u8_endswith(s, suffix)
 end
 function str.u8_strtok(str, delim, ptr)
-    local r
+    local t, r, p
     if delim then
         local s = ffi_new(uint, #str)
         ffi_copy(s, str)
         if not ptr then tptr = ffi_new("uint8_t *[1]") end
-        r = lib.u8_strtok(s, delim, ptr or tptr)
+        p = ptr or tptr
+        t = lib.u8_strtok(s, delim, p)
     else
-        r = lib.u8_strtok(nil, str, delim or tptr)
+        p = delim or tptr
+        t = lib.u8_strtok(nil, str, p)
     end
-    if r == nil then return nil end
-    return ffi_str(r)
+    if t == nil then
+        t = nil
+    else
+        t = ffi_str(t)
+    end
+    if p[0] == nil then
+        r = nil
+    else
+        r = ffi_str(p[0])
+    end
+    return t, r
 end
 return str
