@@ -1,15 +1,26 @@
 -- This is a drop-in replacement to LuaJIT to support Lua 5.3 utf8 library
 -- with some additional functionality for UTF-8 enabled string.xxx functions.
-local format = string.format
-local concat = table.concat
-local type   = type
-local sub    = string.sub
-local str    = require "resty.unistring.str"
-local case   = require "resty.unistring.case"
-local norm   = require "resty.unistring.norm"
-local nrmz   = norm.u8_normalize
-local find   = string.find
+local assert  = assert
+local format  = string.format
+local concat  = table.concat
+local type    = type
+local sub     = string.sub
+local ffi     = require "ffi"
+local ffi_new = ffi.new
+local ffi_str = ffi.string
+local buf     = require "resty.unistring.buf"
+local lib     = require "resty.unistring.lib"
+local str     = require "resty.unistring.str"
+local case    = require "resty.unistring.case"
+local norm    = require "resty.unistring.norm"
+local nrmz    = norm.u8_normalize
+local find    = string.find
 if not ok then newtab = function() return {} end end
+local function posrelat(i, l)
+    if i >= 0    then return i end
+    if 0 - i > l then return 0 end
+    return l + i + 1;
+end
 local utf8 = utf8 or {}
 if not utf8.char then
     function utf8.char(...)
@@ -90,6 +101,28 @@ if not utf8.split then
             s = str.u8_strtok(delim)
         end
         return t
+    end
+end
+if not utf8.sub then
+    function utf8.sub(s, i, j)
+        local t = type(i)
+        assert(t == "number", format("bad argument #2 to 'sub' (number expected, got %s)", t))
+        local l = lib.u8_mbsnlen(s, n or #s)
+        i = posrelat(i, l)
+        j = posrelat(j or -1, l)
+        if i < 1 then i = 1 end
+        if j > l then j = l end
+        i = tonumber(i)
+        j = tonumber(j)
+        if i <= j then
+            local u = ffi_new "ucs4_t[1]"
+            for _ = 2, i do
+                s = lib.u8_next(u, s)
+            end
+            local l = j - i + 1
+            return ffi_str(lib.u8_move(buf(l), s, l), l)
+        end
+        return ""
     end
 end
 if not utf8.slug then

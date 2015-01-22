@@ -9,6 +9,7 @@ local ffi_typeof = ffi.typeof
 local ffi_sizeof = ffi.sizeof
 local ffi_copy   = ffi.copy
 local C          = ffi.C
+local min        = math.min
 ffi_cdef[[
 const uint8_t * u8_check     (const uint8_t  *s, size_t n);
 uint16_t *      u8_to_u16    (const uint8_t  *s, size_t n, uint16_t *resultbuf, size_t *lengthp);
@@ -21,6 +22,8 @@ int             u32_mblen    (const uint32_t *s, size_t n);
 int             u8_mbtouc    (ucs4_t *puc, const uint8_t *s, size_t n);
 int             u8_mbtoucr   (ucs4_t *puc, const uint8_t *s, size_t n);
 int             u8_uctomb    (uint8_t *s, ucs4_t uc, int n);
+uint8_t *       u8_cpy       (uint8_t *dest, const uint8_t *src, size_t n);
+uint8_t *       u8_move      (uint8_t *dest, const uint8_t *src, size_t n);
 int             u8_cmp       (const uint8_t *s1, const uint8_t *s2, size_t n);
 int             u8_cmp2      (const uint8_t *s1, size_t n1, const uint8_t *s2, size_t n2);
 size_t          u8_mbsnlen   (const uint8_t *s, size_t n);
@@ -28,6 +31,8 @@ size_t          u16_mbsnlen  (const uint16_t *s, size_t n);
 size_t          u32_mbsnlen  (const uint32_t *s, size_t n);
 int             u8_strmblen  (const uint8_t *s);
 int             u8_strmbtouc (ucs4_t *puc, const uint8_t *s);
+const uint8_t * u8_next      (ucs4_t *puc, const uint8_t *s);
+const uint8_t * u8_prev      (ucs4_t *puc, const uint8_t *s, const uint8_t *start);
 size_t          u8_strlen    (const uint8_t *s);
 size_t          u8_strnlen   (const uint8_t *s, size_t maxlen);
 size_t          u8_strcspn   (const uint8_t *str, const uint8_t *reject);
@@ -66,6 +71,11 @@ function str.u8_strmbtouc(s)
     if i < 0 then return nil, i end
     return ucs4[0], i
 end
+function str.u8_next(s)
+    local r = lib.u8_next(ucs4, s)
+    if r == nil then return nil, ucs4[0] end
+    return ffi_str(r), ucs4[0]
+end
 function str.u8_mblen(s, n)
     return lib.u8_mblen(s, n or #s)
 end
@@ -87,6 +97,14 @@ function str.u8_uctomb(uc, n)
     ucs4[0] = uc
     local l = lib.u8_uctomb(ui86, uc, n or 6)
     return ffi_str(ui86, l), l
+end
+function str.u8_cpy(src, size)
+    local dest = ffi_new(uint, min(size or src.u8_mbsnlen(src)))
+    return ffi_str(lib.u8_cpy(dest, src, size), size)
+end
+function str.u8_move(src, size)
+    local dest = ffi_new(uint, min(size or src.u8_mbsnlen(src)))
+    return ffi_str(lib.u8_move(dest, src, size), size)
 end
 function str.u8_cmp(s1, s2, n)
     return lib.u8_cmp(s1, s2, n)
@@ -146,11 +164,13 @@ function str.u8_strtok(str, delim, ptr)
         p = delim or tptr
         t = lib.u8_strtok(nil, str, p)
     end
+    -- looks strange, but with LuaJIT there are two kind of nils that evaluate to nil.
     if t == nil then
         t = nil
     else
         t = ffi_str(t)
     end
+    -- looks strange, but with LuaJIT there are two kind of nils that evaluate to nil.
     if p[0] == nil then
         r = nil
     else
