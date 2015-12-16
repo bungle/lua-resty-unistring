@@ -1,8 +1,9 @@
-local require    = require
-local ffi        = require "ffi"
-local ffi_new    = ffi.new
-local ffi_typeof = ffi.typeof
-local uint8t     = ffi_typeof "uint8_t[?]"
+local require      = require
+local ffi          = require "ffi"
+local ffi_new      = ffi.new
+local ffi_typeof   = ffi.typeof
+local uint8t       = ffi_typeof "uint8_t[?]"
+local setmetatable = setmetatable
 local buf = {}
 function buf.u8(size)
     return ffi_new(uint8t, size)

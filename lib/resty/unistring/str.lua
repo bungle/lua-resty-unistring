@@ -10,6 +10,7 @@ local ffi_sizeof = ffi.sizeof
 local ffi_copy   = ffi.copy
 local C          = ffi.C
 local min        = math.min
+local tonumber   = tonumber
 ffi_cdef[[
 const uint8_t * u8_check     (const uint8_t  *s, size_t n);
 uint16_t *      u8_to_u16    (const uint8_t  *s, size_t n, uint16_t *resultbuf, size_t *lengthp);

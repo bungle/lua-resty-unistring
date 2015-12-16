@@ -5,6 +5,8 @@ local ffi_cdef   = ffi.cdef
 local ffi_str    = ffi.string
 local ffi_new    = ffi.new
 local ffi_typeof = ffi.typeof
+local type       = type
+local tonumber   = tonumber
 ffi_cdef[[
 struct unicode_normalization_form;
 typedef const struct unicode_normalization_form *uninorm_t;

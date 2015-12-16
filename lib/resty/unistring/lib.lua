@@ -14,4 +14,4 @@ const struct unicode_normalization_form uninorm_nfkd;
 const struct unicode_normalization_form uninorm_nfkc;
 typedef uint32_t ucs4_t;
 ]]
-return ffi_load "libunistring"
+return ffi_load "unistring"

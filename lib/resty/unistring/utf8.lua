@@ -1,21 +1,25 @@
 -- This is a drop-in replacement to LuaJIT to support Lua 5.3 utf8 library
 -- with some additional functionality for UTF-8 enabled string.xxx functions.
-local assert  = assert
-local format  = string.format
-local concat  = table.concat
-local type    = type
-local sub     = string.sub
-local rep     = string.rep
-local ffi     = require "ffi"
-local ffi_new = ffi.new
-local ffi_str = ffi.string
-local buf     = require "resty.unistring.buf"
-local lib     = require "resty.unistring.lib"
-local str     = require "resty.unistring.str"
-local case    = require "resty.unistring.case"
-local norm    = require "resty.unistring.norm"
-local nrmz    = norm.u8_normalize
-local find    = string.find
+local assert   = assert
+local format   = string.format
+local concat   = table.concat
+local type     = type
+local sub      = string.sub
+local rep      = string.rep
+local ffi      = require "ffi"
+local ffi_new  = ffi.new
+local ffi_str  = ffi.string
+local buf      = require "resty.unistring.buf"
+local lib      = require "resty.unistring.lib"
+local str      = require "resty.unistring.str"
+local case     = require "resty.unistring.case"
+local norm     = require "resty.unistring.norm"
+local nrmz     = norm.u8_normalize
+local find     = string.find
+local tonumber = tonumber
+local concat   = table.concat
+local select   = select
+local ok, newtab = pcall(require, "table.new")
 if not ok then newtab = function() return {} end end
 local function posrelat(i, l)
     if i >= 0    then return i end
@@ -139,7 +143,7 @@ if not utf8.reverse then
             s = lib.u8_next(u, s)
             r[i] = str.u8_uctomb(u[0])
         end
-        return table.concat(r)
+        return concat(r)
     end
 end
 if not utf8.slug then
